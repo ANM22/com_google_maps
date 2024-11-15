@@ -1,13 +1,10 @@
 <?php
-/*
- * Author: ANM22
- * Last modified: 11 Jul 2017 - GMT +2 09:15
- *
- * ANM22 Andrea Menghi all rights reserved
- *
- */
 
-/* Maps */
+/**
+ * Google Maps plugin for ANM22 WebBase CMS.
+ * 
+ * @author Andrea Menghi <andrea.menghi@anm22.it>
+ */
 class com_google_maps_embeded extends com_anm22_wb_editor_page_element {
 
     var $elementClass = "com_google_maps_embeded";
@@ -22,7 +19,16 @@ class com_google_maps_embeded extends com_anm22_wb_editor_page_element {
     var $mapHeight;
     private $lockScroll = 0;
 
-    function importXMLdoJob($xml) {
+    /**
+     * @deprecated since editor 3.0
+     * 
+     * Method to init the element.
+     * 
+     * @param SimpleXMLElement $xml Element data
+     * @return void
+     */
+    function importXMLdoJob($xml)
+    {
         $this->title = htmlspecialchars_decode($xml->title);
         $this->mapLink = htmlspecialchars_decode($xml->mapLink);
         $this->description = htmlspecialchars_decode($xml->description);
@@ -34,7 +40,36 @@ class com_google_maps_embeded extends com_anm22_wb_editor_page_element {
         }
     }
 
-    function show() {
+    /**
+     * Method to init the element.
+     * 
+     * @param mixed[] $data Element data
+     * @return void
+     */
+    public function initData($data)
+    {
+        $this->title = $data['title'];
+        if ($data['mapLink']) {
+            $this->mapLink = htmlspecialchars_decode($data['mapLink']);
+        }
+        if ($data['description']) {
+            $this->description = htmlspecialchars_decode($data['description']);
+        }
+        $this->mapMaxWidth = $data['mapMaxWidth'];
+        $this->mapHeight = $data['mapHeight'];
+        $this->setLockScroll(intval($data['lockScroll']));
+        if (isset($data['headingTag']) && $data['headingTag']) {
+            $this->setHeadingTag(htmlspecialchars_decode($data['headingTag']));
+        }
+    }
+
+    /**
+     * Render the page element
+     * 
+     * @return void
+     */
+    function show()
+    {
         if ($this->getLockScroll()) {
             echo '<link rel="stylesheet" href="' . $this->page->getHomeFolderRelativeHTMLURL() . 'ANM22WebBase/website/plugins/' . $this->elementPlugin . '/css/scrollLockStyles.min.css">';
         }
@@ -43,20 +78,20 @@ class com_google_maps_embeded extends com_anm22_wb_editor_page_element {
                 echo ' onclick="this.className=\'' . $this->elementPlugin . '_' . $this->elementClass . ' scrollActive\'"';
             }
             echo '>';
-            if ($this->title != "") {
+            if ($this->title && $this->title != "") {
                 echo '<' . $this->getHeadingTag();
-                if (isset($this->page->pageOptions["h1-color"])) {
+                if (isset($this->page->pageOptions["h1-color"]) && $this->page->pageOptions["h1-color"]) {
                     echo ' style="color:' . $this->page->pageOptions["h1-color"] . ';"';
                 }
-                echo '>' .$this->title . '</' . $this->getHeadingTag() . '>';
+                echo '>' . $this->title . '</' . $this->getHeadingTag() . '>';
             }
             if ($this->mapLink != "") {
-                if ($this->mapMaxWidth == "" or ( !$this->mapMaxWidth)) {
+                if ($this->mapMaxWidth == "" || (!$this->mapMaxWidth)) {
                     $maxWidth = "100%";
                 } else {
                     $maxWidth = $this->mapMaxWidth;
                 }
-                if ($this->mapHeight == "" or ( !$this->mapHeight)) {
+                if ($this->mapHeight == "" || (!$this->mapHeight)) {
                     $height = "450px";
                 } else {
                     $height = $this->mapHeight;
@@ -73,18 +108,22 @@ class com_google_maps_embeded extends com_anm22_wb_editor_page_element {
         echo '</div>';
     }
     
-    public function getLockScroll() {
+    public function getLockScroll()
+    {
         return $this->lockScroll;
     }
-    public function setLockScroll($lockScroll) {
+    public function setLockScroll($lockScroll)
+    {
         $this->lockScroll = $lockScroll;
         return $this;
     }
     
-    public function getHeadingTag() {
+    public function getHeadingTag()
+    {
         return $this->headingTag;
     }
-    public function setHeadingTag($headingTag) {
+    public function setHeadingTag($headingTag)
+    {
         $this->headingTag = $headingTag;
         return $this;
     }
